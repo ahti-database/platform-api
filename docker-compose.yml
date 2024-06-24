@@ -1,0 +1,28 @@
+version: "3"
+
+services:
+  db:
+    image: ghcr.io/tursodatabase/libsql-server:latest
+    container_name: libsql
+    ports:
+      - "8080:8080"
+      - "5001:5001"
+    environment:
+      # https://github.com/tursodatabase/libsql/blob/main/libsql-server/src/main.rs
+      # https://github.com/tursodatabase/libsql/blob/main/docker-entrypoint.sh
+      - SQLD_NODE=primary
+    volumes:
+      - sqld:/var/lib/sqld
+
+  db-replica:
+    image: ghcr.io/tursodatabase/libsql-server:latest
+    container_name: libsql-replica
+    environment:
+      # https://github.com/tursodatabase/libsql/blob/main/libsql-server/src/main.rs
+      # https://github.com/tursodatabase/libsql/blob/main/docker-entrypoint.sh
+      - SQLD_PRIMARY_URL=http://db:5001
+      - SQLD_NODE=replica
+
+
+volumes:
+  sqld:
