@@ -8,7 +8,9 @@ import (
 	"path/filepath"
 
 	"github.com/Jason-CKY/ahti/pkg/handlers"
+	"github.com/Jason-CKY/ahti/pkg/schemas"
 	"github.com/Jason-CKY/ahti/pkg/utils"
+	"github.com/go-playground/validator"
 	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
 	log "github.com/sirupsen/logrus"
@@ -69,6 +71,7 @@ func main() {
 	}
 
 	e := echo.New()
+	e.Validator = &schemas.APIValidator{Validator: validator.New()}
 	e.GET("/", func(c echo.Context) error {
 		return c.String(http.StatusOK, "Hello from the ahti platform API!")
 	})
@@ -78,5 +81,6 @@ func main() {
 
 	g := e.Group("/api/v1")
 	g.GET("/databases", handlers.ListDatabases)
+	g.POST("/organizations/:organization/databases", handlers.CreateDatabase)
 	e.Logger.Fatal(e.Start(fmt.Sprintf(":%v", utils.Port)))
 }
