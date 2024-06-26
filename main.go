@@ -1,7 +1,6 @@
 package main
 
 import (
-	"context"
 	"flag"
 	"fmt"
 	"net/http"
@@ -13,7 +12,6 @@ import (
 	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
 	log "github.com/sirupsen/logrus"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
@@ -65,17 +63,9 @@ func main() {
 
 	// create the clientset
 	config := getKubernetesConfig()
-	clientSet, err := kubernetes.NewForConfig(config)
+	utils.ClientSet, err = kubernetes.NewForConfig(config)
 	if err != nil {
 		panic(err.Error())
-	}
-
-	allConfigmaps, err := clientSet.CoreV1().ConfigMaps("default").List(context.TODO(), metav1.ListOptions{})
-	if err != nil {
-		panic(err.Error())
-	}
-	for _, cm := range allConfigmaps.Items {
-		log.Info(cm.Name)
 	}
 
 	e := echo.New()
